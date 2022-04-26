@@ -16,14 +16,14 @@ export default class Home extends React.Component {
         }
     }
     componentDidMount() {
-        // this.loadData();
-        let cached = JSON.parse(localStorage.getItem("items"));
-        var languages = cached.map(data => {
-            if (data.language != null)
-                return data.language;
-        });
-        languages = [...new Set(languages.map(item => item))];
-        this.setState({ list: cached, languages: languages });
+        this.loadData();
+        // let cached = JSON.parse(localStorage.getItem("items"));
+        // var languages = cached.map(data => {
+        //     if (data.language != null)
+        //         return data.language;
+        // });
+        // languages = [...new Set(languages.map(item => item))];
+        // this.setState({ list: cached, languages: languages });
 
         let starred = localStorage.getItem("starred");
         starred = (starred != null) ? JSON.parse(starred) : [];
