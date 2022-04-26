@@ -9,7 +9,8 @@ export default class Home extends React.Component {
             loading: false,
             errorMsg: "",
             filter:"all",
-            starred:[]
+            starred:[],
+            rating:[1,2,3,4,5]
         }
     }
     componentDidMount() {
@@ -44,24 +45,23 @@ export default class Home extends React.Component {
             });
     }
 
-    starItem=(id)=>{
+    starItem=(id,star)=>{
         let starred=this.state.starred;
-        if(starred.includes(id)){
-            starred=starred.filter(data=>(data!=id));
-        }else{
-            starred.push(id);
+        if(starred.filter(data=>(data.id==id)).length>0){
+            starred=starred.filter(data=>(data.id!=id));
         }
+        starred.push({id:id,rating:star});
         localStorage.setItem("starred",JSON.stringify(starred));
         this.setState({starred:starred});
     }
 
 
     render() {
-        const { list, loading, errorMsg,starred,filter } = this.state;
+        const { list, loading, errorMsg,starred,filter,rating } = this.state;
         let itemList = list;
 
         if(filter!=="all"){
-            itemList=list.filter(data=>(starred.includes(data.id)));
+            itemList=list.filter(data=>(starred.filter(star=>(star.id==data.id)).length>0));
         }
         return (<>
             <div className="container">
@@ -87,15 +87,19 @@ export default class Home extends React.Component {
                                 <td>Description</td>
                                 <td>Rating</td>
                                 <td>Link</td>
-                                <td></td>
+                                <td>Starring</td>
                             </thead>
                             {itemList.map(items => {
+                                var rate=starred.filter(star=>(star.id==items.id));
+                                rate=(rate.length>0)?rate[0].rating:0;
                                 return <tr className="col-12 item-container">
-                                    <td>{items.name}</td>
+                                    <td>{items.name}{JSON.stringify(rate)}</td>
                                     <td>{items.description}</td>
                                     <td>{items.stargazers_count}</td>
                                     <td><a href={items.url} target="_blank"><ion-icon name="link"></ion-icon></a></td>
-                                    <td><button onClick={()=>this.starItem(items.id)}><ion-icon name={(starred.includes(items.id))?"star":"star-outline"}></ion-icon></button></td>
+                                    <td>{rating.map(stars=>{
+                                        return <button onClick={()=>this.starItem(items.id,stars)}><ion-icon name={(rate>=stars)?"star":"star-outline"}></ion-icon></button>
+                                    })}</td>
                                 </tr>
                             })}
                         </table>
